@@ -1,0 +1,217 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.app{padding:1.5rem 0}
+.header{margin-bottom:1.5rem}
+.header h1{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.header p{font-size:13px;color:var(--color-text-secondary)}
+.segment{display:flex;gap:8px;margin-bottom:1.5rem;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:6px}
+.seg-btn{flex:1;padding:8px 6px;border:none;border-radius:var(--border-radius-md);background:transparent;font-size:13px;font-weight:400;color:var(--color-text-secondary);cursor:pointer;transition:all 0.15s}
+.seg-btn.active{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500;border:0.5px solid var(--color-border-secondary)}
+.fields{display:grid;gap:12px;margin-bottom:1.5rem}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;color:var(--color-text-secondary)}
+.field-row{display:flex;align-items:center;gap:8px}
+.field input{flex:1;padding:8px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:15px}
+.field input:focus{outline:none;border-color:var(--color-border-primary)}
+.field .unit{font-size:13px;color:var(--color-text-secondary);min-width:24px}
+.hint{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.btn-calc{width:100%;padding:10px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:15px;font-weight:500;color:var(--color-text-primary);cursor:pointer;margin-bottom:1.5rem}
+.btn-calc:hover{background:var(--color-background-secondary)}
+.result-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem;display:none}
+.result-card.show{display:block}
+.result-main{font-size:28px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.result-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem}
+.result-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
+.badge{font-size:12px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid}
+.badge-info{background:#E6F1FB;color:#0C447C;border-color:#B5D4F4}
+.badge-warn{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.badge-ok{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
+.badge-err{background:#FCEBEB;color:#791F1F;border-color:#F7C1C1}
+.fiab{font-size:12px;color:var(--color-text-secondary);padding-top:0.75rem;border-top:0.5px solid var(--color-border-tertiary)}
+.error-msg{font-size:13px;color:#A32D2D;padding:0.75rem;background:#FCEBEB;border-radius:var(--border-radius-md);border:0.5px solid #F7C1C1;margin-bottom:1rem;display:none}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:1rem 0}
+</style>
+
+<div class="app">
+  <div class="header">
+    <h1>Âge gestationnel échographique</h1>
+    <p>Sélectionne le terme clinique estimé puis entre les mesures</p>
+  </div>
+
+  <div class="segment">
+    <button class="seg-btn active" onclick="setMode('T1')" id="btn-T1">&lt; 14 SA</button>
+    <button class="seg-btn" onclick="setMode('T2')" id="btn-T2">14 – 28 SA</button>
+    <button class="seg-btn" onclick="setMode('T3')" id="btn-T3">&gt; 28 SA</button>
+  </div>
+
+  <div id="fields-T1" class="fields">
+    <div class="field">
+      <label>LCC — Longueur cranio-caudale</label>
+      <div class="field-row">
+        <input type="number" id="lcc" placeholder="ex : 45" min="1" max="85" step="0.1">
+        <span class="unit">mm</span>
+      </div>
+      <span class="hint">Valide entre 10 mm (6 SA) et 84 mm (14 SA)</span>
+    </div>
+  </div>
+
+  <div id="fields-T2" class="fields" style="display:none">
+    <div class="field">
+      <label>BIP — Diamètre bipariétal</label>
+      <div class="field-row"><input type="number" id="bip" placeholder="ex : 40" min="20" max="100" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <div class="field">
+      <label>PC — Périmètre crânien</label>
+      <div class="field-row"><input type="number" id="pc" placeholder="ex : 150" min="80" max="360" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <div class="field">
+      <label>PA — Périmètre abdominal</label>
+      <div class="field-row"><input type="number" id="pa" placeholder="ex : 135" min="70" max="360" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <div class="field">
+      <label>LF — Longueur fémorale</label>
+      <div class="field-row"><input type="number" id="lf" placeholder="ex : 28" min="10" max="80" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <span class="hint">Entrez au moins 2 mesures pour une estimation fiable</span>
+  </div>
+
+  <div id="fields-T3" class="fields" style="display:none">
+    <div class="field">
+      <label>BIP — Diamètre bipariétal</label>
+      <div class="field-row"><input type="number" id="bip3" placeholder="ex : 75" min="60" max="110" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <div class="field">
+      <label>PC — Périmètre crânien</label>
+      <div class="field-row"><input type="number" id="pc3" placeholder="ex : 270" min="200" max="380" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <div class="field">
+      <label>PA — Périmètre abdominal</label>
+      <div class="field-row"><input type="number" id="pa3" placeholder="ex : 250" min="180" max="400" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <div class="field">
+      <label>LF — Longueur fémorale</label>
+      <div class="field-row"><input type="number" id="lf3" placeholder="ex : 55" min="40" max="80" step="0.1"><span class="unit">mm</span></div>
+    </div>
+    <span class="hint">Entrez au moins 2 mesures. Fiabilité ± 2–3 semaines.</span>
+  </div>
+
+  <div class="error-msg" id="err-msg"></div>
+  <button class="btn-calc" onclick="calculate()">Calculer l'âge gestationnel</button>
+
+  <div class="result-card" id="result-card">
+    <div class="result-main" id="res-sa">— SA</div>
+    <div class="result-sub" id="res-range"></div>
+    <div class="result-badges" id="res-badges"></div>
+    <div class="divider"></div>
+    <div class="fiab" id="res-fiab"></div>
+  </div>
+</div>
+
+<script>
+let mode = 'T1';
+
+function setMode(m){
+  mode = m;
+  ['T1','T2','T3'].forEach(t=>{
+    document.getElementById('fields-'+t).style.display = t===m ? 'grid' : 'none';
+    document.getElementById('btn-'+t).classList.toggle('active', t===m);
+  });
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('err-msg').style.display='none';
+}
+
+function showErr(msg){
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideErr(){ document.getElementById('err-msg').style.display='none'; }
+
+function val(id){ const v=parseFloat(document.getElementById(id)?.value); return isNaN(v)?null:v; }
+
+function lccToSA(lcc){
+  return 6.0 + (lcc / 10.0) * 0.9;
+}
+
+function bipToSA(bip){
+  return 14 + (bip - 20) * 0.35;
+}
+function pcToSA(pc){
+  return 14 + (pc - 80) * 0.09;
+}
+function paToSA(pa){
+  return 14 + (pa - 70) * 0.09;
+}
+function lfToSA(lf){
+  return 14 + (lf - 10) * 0.52;
+}
+function bipToSA3(bip){ return 28 + (bip - 70) * 0.5; }
+function pcToSA3(pc){ return 28 + (pc - 250) * 0.07; }
+function paToSA3(pa){ return 28 + (pa - 220) * 0.06; }
+function lfToSA3(lf){ return 28 + (lf - 52) * 0.7; }
+
+function moisObst(sa){ return (sa/4.5).toFixed(1); }
+
+function termeBadge(sa){
+  if(sa < 37) return {label:'Prématuré', cls:'badge-err'};
+  if(sa < 39) return {label:'À terme précoce', cls:'badge-warn'};
+  if(sa <= 41) return {label:'À terme complet', cls:'badge-ok'};
+  return {label:'Post-terme', cls:'badge-err'};
+}
+
+function calculate(){
+  hideErr();
+  document.getElementById('result-card').classList.remove('show');
+
+  let sa = null, fiab = '', estimates = [], count = 0;
+
+  if(mode === 'T1'){
+    const lcc = val('lcc');
+    if(!lcc){ showErr('Entrez la valeur LCC.'); return; }
+    if(lcc < 10 || lcc > 84){ showErr('LCC hors plage (10–84 mm pour 6–14 SA).'); return; }
+    sa = lccToSA(lcc);
+    fiab = 'Fiabilité : ± 3–5 jours (mesure de référence au 1er trimestre)';
+  }
+  else if(mode === 'T2'){
+    const b=val('bip'), p=val('pc'), a=val('pa'), l=val('lf');
+    if(b){ estimates.push(bipToSA(b)); count++; }
+    if(p){ estimates.push(pcToSA(p)); count++; }
+    if(a){ estimates.push(paToSA(a)); count++; }
+    if(l){ estimates.push(lfToSA(l)); count++; }
+    if(count < 1){ showErr('Entrez au moins une mesure.'); return; }
+    sa = estimates.reduce((a,b)=>a+b,0)/estimates.length;
+    fiab = `Fiabilité : ± 1 semaine (${count} mesure${count>1?'s':''} utilisée${count>1?'s':''})`;
+  }
+  else {
+    const b=val('bip3'), p=val('pc3'), a=val('pa3'), l=val('lf3');
+    if(b){ estimates.push(bipToSA3(b)); count++; }
+    if(p){ estimates.push(pcToSA3(p)); count++; }
+    if(a){ estimates.push(paToSA3(a)); count++; }
+    if(l){ estimates.push(lfToSA3(l)); count++; }
+    if(count < 1){ showErr('Entrez au moins une mesure.'); return; }
+    sa = estimates.reduce((a,b)=>a+b,0)/estimates.length;
+    fiab = `Fiabilité : ± 2–3 semaines (${count} mesure${count>1?'s':''} utilisée${count>1?'s':''})`;
+  }
+
+  const margin = mode==='T1' ? 0.5 : mode==='T2' ? 1 : 2.5;
+  const saRound = Math.round(sa * 10)/10;
+  const low = Math.round((sa - margin)*10)/10;
+  const high = Math.round((sa + margin)*10)/10;
+  const mois = moisObst(saRound);
+
+  document.getElementById('res-sa').textContent = saRound.toFixed(1) + ' SA';
+  document.getElementById('res-range').textContent = `Intervalle : ${low} – ${high} SA  ·  ≈ ${mois} mois de grossesse`;
+
+  const b = termeBadge(saRound);
+  const modeBadge = mode==='T1' ? {label:'1er trimestre',cls:'badge-info'} : mode==='T2' ? {label:'2ème trimestre',cls:'badge-info'} : {label:'3ème trimestre',cls:'badge-warn'};
+  document.getElementById('res-badges').innerHTML =
+    `<span class="badge ${modeBadge.cls}">${modeBadge.label}</span>` +
+    (saRound >= 37 ? `<span class="badge ${b.cls}">${b.label}</span>` : '');
+
+  document.getElementById('res-fiab').textContent = fiab;
+  document.getElementById('result-card').classList.add('show');
+}
+</script>
